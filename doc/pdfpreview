@@ -1,0 +1,1 @@
+ls $1 | entr -c pdflatex $1 && pkill -HUP mupdf

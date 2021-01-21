@@ -1,0 +1,120 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{polski}
+\selecthyphenation{polish}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{enumerate}
+
+\def\code#1{\texttt{#1}}
+
+\title{Kodowanie słownikowe danych o strukturze bajtowej}
+\author{Hubert Adamkiewicz}
+\date{Styczeń 2021}
+
+\begin{document}
+\maketitle
+
+\section{Opis problemu}
+Zadanie polega na zrealizowaniu prostego kodera i dekodera wykorzystującego metodę LZ77
+(dla ustalenia uwagi proszę stosować metodę w wariancie przedstawionym w materiałach
+wykładowych).
+Przyjmujemy następujące założenia:
+\begin{enumerate}
+\item Kodowane pliki mają strukturę bajtową (tzn. mogą zawierać dane z dowolnego
+problemu, w którym występuje co najwyżej \textbf{256} różnych „komunikatów”).
+\item Długość \textit{bufora słownika} wynosi \texybf{256} bajtów, a \textit{bufora wejściowego (look-ahead buffer)}
+\textbf{15} bajtów, tzn. pojedynczy \textit{wskaźnik do słownika} ma rozmiar \textbf{2.5} bajta (\textbf{1} bajt
+reprezentujący położenie kopii fragmentu znalezionej w słowniku czyli \textit{offset}, \textbf{0.5} bajta
+do zakodowania \textit{długości kopii} oraz \textbf{1} bajt zawierający „komunikat” bezpośrednio po
+znalezionym fragmencie).
+\item Rozwiązanie ma mieć postać DWÓCH gotowych do użycia funkcji/skryptów/aplikacji,
+tzn. \textit{kodera} i \textit{dekodera}.
+\item Koder ma dwa argumenty wejściowe, tzn. (1) nazwa wraz z rozszerzeniem
+kodowanego pliku oraz (2) nazwa (wraz z dowolnie zdefiniowanym rozszerzeniem, na
+przykład \textbf{.xxx}) pliku zakodowanego, który ma być zapisany w tym samym folderze,
+co plik kodowany.
+\item \textit{Dekoder} ma również dwa argumenty wejściowe, tzn. (1) nazwa (wraz z zastosowanym
+rozszerzeniem, na przykład \textbf{.xxx}) dekodowanego pliku oraz (2) nazwa (wraz z
+zadanym rozszerzeniem) pliku rozkodowanego, który ma być zapisany w tym samym
+folderze, co plik dekodowany.
+Zrealizowane rozwiązania powinny być przetestowane na wybranych przykładach (np. plikach
+w formacie \textbf{.txt}).
+
+\section{Realizacja}
+TODO: Napisać nowy tekst. Dalej już są teksty z poprzedniego projektu
+\subsection{Kwantyzacja}
+W celu zredukowania liczby kodowanych informacji dokonałem kwantyzacji skalarnej równomiernej. 
+Proces ten polegał na obliczeniu histogramu dla \code{L} przedziałów wartości (gdzie \code{L} -- liczba możliwych poziomów po kwantyzacji), wyznaczenie środków tych przedziałów i ustalenie ich jako nowych wartości sygnału skwantowanego.
+
+\subsection{Kodowanie}
+Sygnał skwantowany został zakodowany przy pomocy kodu Huffmana. Jest to metoda bardzo skuteczna, jeżeli znane są prawdopodobieństwa wystąpienia poszczególnych komunikatów. W analizowanym przykładzie takie prawdopodobieństwa są wyznaczane tuż po kwantyzacji, a kompresja przeprowadzana jest na znanych danych, więc zastosowanie tej metody powinno być efektywne.
+
+Aby tego dokonać obliczyłem prawdopodobieństwa występowania poszczególnych komunikatów ze zbioru skwantowanych wartości sygnału na podstawie sygnału wejściowego, wyliczyłem kod Huffmana, a następnie przy pomocy uzyskanego kodu przekonwertowałem tablicę wartości skwantowanych na ciąg bitów.
+
+\section{Uruchomienie projektu}
+Projekt został zrealizowany w języku programowania Python w wersji 3. 
+Niezbędna jest zatem instalacja interpretera języka python dostępnego \href{https://www.python.org/downloads/windows/}{tutaj} oraz menedżera paczek \code{pip}. W tym celu należy pobrać skrypt instalacyjny \href{https://bootstrap.pypa.io/get-pip.py}{stąd}, a następnie uruchomić instalację poleceniem \code{python3 get-pip.py} w katalogu, w którym znajduje się pobrany plik ze skryptem.
+Następnie należy zainstalować niezbędne do uruchomienia kodu biblioteki poleceniem: \\
+\code{pip install scipy numpy sounddevice matplotlib huffman json}
+
+Aby uruchomić program należy uruchomić linię komend w katalogu zawierającym plik \textit{run.py} oraz użyć komendy \code{python3 run.py}. Uruchomi to kod realizujący najmocniejszą kompresję o parametrze PSNR zbliżonym do 40dB.
+
+Można również uruchomić polecenie z dodatkowymi parametrami umożliwiającymi wybór pliku do kompresji, nazwy pliku binarnego z zakodowanym sygnałem oraz liczby skwantowanych poziomów sygnału. Aby dokonać modyfikacji tych parametrów należy wywołać polecenie w następującym formacie:\\
+\code{python3 run.py -i sygnal.wav -o wynik.bin -l poziomy\_kwantowania}.\\
+Przykład:
+\code{python3 run.py -i icing.wav -o icing.bin -l 200}. Skrypt załaduje plik \textit{icing.wav}, skwantuje sygnał do 200 poziomów, a zakodowany w formie binarnej ciąg znaków zapisze do pliku \textit{icing.bin}
+
+\section{Wyniki}
+W celu prezentacji skuteczności metod opisanych w rozdziale \ref{sec:realizacja} zaprezentuję wyniki dwóch przykładowych uruchomień kodu.
+\begin{enumerate}
+\item Wyniki dla pliku domyślnego - \textit{music2.wav}:
+    \begin{enumerate}
+    \item \textbf{Maksymalna kompresja} -- 31 poziomów kwantyzacji, PSNR najbliższy 40dB, sygnał jest rozpoznawalny, ale szumy są dość głośne:\\  
+    \code{
+        PSNR = 40.13444750137048\\
+        BR = 3.6456082260288736\\
+        Entropia = 3.605834186540232}
+    \item \textbf{Dobra jakość} -- 300 poziomów kwantyzacji, jakość zadowalająca, szum zauważalny przy większym poziomie głośności.\\
+    \code{
+        PSNR = 60.18797300522537\\
+        BR = 6.987400030899106\\
+        Entropia = 6.955444109513735}
+    \end{enumerate}
+\item Wyniki dla pliku wejściowego \textit{icing.wav}:
+    \begin{enumerate}
+    \item \textbf{Maksymalna kompresja}\\  
+    \code{
+        PSNR = 39.7806597597401\\
+        BR = 3.095083163318919\\
+        Entropia = 3.0757936495697034
+    }
+
+    \item \textbf{Dobra jakość}\\
+    \code{
+        PSNR = 60.3009764032355\\
+        BR = 6.423872204675545\\
+        Entropia = 6.395775973820144
+    }
+    \end{enumerate}
+\item Wyniki dla pliku wejściowego \textit{song.wav}:
+\begin{enumerate}
+\item \textbf{Maksymalna kompresja}\\  
+    \code{
+        PSNR = 40.04737187674411\\
+        BR = 3.7788559999999998\\
+        Entropia = 3.74769605187218
+    }
+
+    \item \textbf{Dobra jakość}\\
+    \code{
+        PSNR = 59.92132157073871\\
+        BR = 7.121758\\
+        Entropia = 7.082421065471701
+    }
+    \end{enumerate}
+\end{enumerate}
+
+Wyniki dla każdego z trzech plików są podobne. Średnia bitowa jest zbliżona do entriopii, a stosunek sygnału do szumu różni się nieznacznie w zależności od wybranego pliku. Jest to spowodowane wykorzystaniem metod niezwiązanych ściśle z określonym plikiem źródłowym, a obliczenie wartości skwantowanych oraz kodu Huffmana jest niezależne dla każdego z nich.
+
+\end{document}
