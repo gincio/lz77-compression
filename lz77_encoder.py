@@ -3,13 +3,13 @@ import os.path
 
 def main():
     # Parse input parameters
-    parser = ArgumentParser()
-    parser.add_argument("input_file_path", nargs=1)
-    parser.add_argument("output_file_path", nargs=1)
+    parser = ArgumentParser(description='A tool encoding files consisting of 8-bit information (works not only with 8-bit-designed formats, but made mainly for them).')
+    parser.add_argument("input_file_path", nargs=1, help='path to file to encode')
+    parser.add_argument("output_file_path", nargs=1, help='path to store encoded data, which could be decoded, for example, with decoder delivered with this tool')
     parser.add_argument('-v', '--verbose', action='store_true', help='an optional argument to show each step of encoding and additional info')
     args = parser.parse_args()
     if args.verbose:
-        print(f"Given args: \n\t \
+        print(f"Input args: \n\t \
         Input file: {args.input_file_path}\n\t \
         Output file: {args.output_file_path}\n\t")
     
@@ -103,7 +103,7 @@ def findLongestMatch(db, lab):
     return [offset, length, next_char]
 
 def askForOverwrite(path):
-    do_overwrite = input(f'File {path} exists. Do you want to overwrite it? [y/N]')
+    do_overwrite = input(f'File {path} exists. Do you want to overwrite it? [y/N] ')
     if (do_overwrite.lower() != 'y'):
         print(f"\nYou have been chosen NOT to overwrite file. Try again with different filename. Exiting...")
         exit(0)
@@ -115,11 +115,11 @@ def getFileSize(file):
 
 def printCompressionInfo(input_size, output_size):
     cr = input_size / output_size
-    cp = 1 - (1 / cr)
+    cp = (1 - (1 / cr)) * 100
     br = 1 / cr * 8
     print(f"\nCompression stats: \n \
-        \tCR (compression ratio) = {cr}\n \
-        \tCP (compression percentage) = {cp}\n \
-        \tBR (bit rate) = {br}\n")
+        \tCR (compression ratio) = {cr:.8f}\n \
+        \tCP (compression percentage) = {cp:.2f}%\n \
+        \tBR (bit rate) = {br:.4f}\n")
 
 main()
