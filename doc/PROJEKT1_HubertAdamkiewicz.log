@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2021.1.19)  22 JAN 2021 01:05
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Arch Linux) (preloaded format=pdflatex 2021.1.19)  22 JAN 2021 01:23
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -375,13 +375,7 @@ LaTeX Font Info:    External font `plex10' loaded for size
 (Font)              <5> on input line 50.
  [1
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-Overfull \hbox (10.25165pt too wide) in paragraph at lines 60--62
-\OT4/cmr/m/n/10 lo-gicz-nie do ko-de-ra, za-tem uru-cha-mia-ny jest po-le-ce-ni
-em \OT4/cmtt/m/n/10 python lz77[]decoder.py
- []
-
-[2]
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
 <./images//sunflow.png, id=69, 256.96pt x 256.96pt>
 File: ./images//sunflow.png Graphic file (type png)
 <use ./images//sunflow.png>
@@ -415,7 +409,7 @@ Here is how much of TeX's memory you used:
  23802 multiletter control sequences out of 15000+600000
  414240 words of font info for 54 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 66i,7n,72p,741b,463s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 66i,7n,72p,746b,427s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}{/usr/share/
 texmf-dist/fonts/enc/dvips/pl/plms.enc}{/usr/share/texmf-dist/fonts/enc/dvips/p
 l/pltt.enc}{/usr/share/texmf-dist/fonts/enc/dvips/pl/plit.enc}{/usr/share/texmf
@@ -426,7 +420,7 @@ ublic/pl/plr12.pfb></usr/share/texmf-dist/fonts/type1/public/pl/plr17.pfb></usr
 /share/texmf-dist/fonts/type1/public/pl/plsy10.pfb></usr/share/texmf-dist/fonts
 /type1/public/pl/plti10.pfb></usr/share/texmf-dist/fonts/type1/public/pl/pltt10
 .pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on PROJEKT1_HubertAdamkiewicz.pdf (5 pages, 187767 bytes).
+Output written on PROJEKT1_HubertAdamkiewicz.pdf (5 pages, 187727 bytes).
 PDF statistics:
  138 PDF objects out of 1000 (max. 8388607)
  117 compressed objects within 2 object streams

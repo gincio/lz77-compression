@@ -47,18 +47,18 @@ w formacie \textbf{.txt}).
 
 \section{Szczegóły implementacji}
 \subsection{Koder}
-Funkcjonalność kodera została zaimplementowana w pliku \textit{lz77\_encoder.py}. Aby uruchomić program należy mieć zainstalowany w systemie interpreter języka Python w wersji przynajmniej 2.7 oraz użyć polecenia \code{python lz77\_encoder.py plik\_wejsciowy plik\_wyjsciowy}. Jeżeli ścieżka do pliku wyjściowego nie będzie zawierała rozszerzenia, skrypt automatycznie przypisze rozszerzenie \textbf{.lz77}. Ponadto do polecenia można dodać parametr \code{-v} lub \code{--verbose}, który wyświetli w konsoli poszczególne kroki algorytmu LZ77 w formacie \textbf{$\langle$offset, length, next\_char$\rangle$} , gdzie:
+Funkcjonalność kodera została zaimplementowana w pliku \textit{lz77\_encoder.py}. Aby uruchomić program należy mieć zainstalowany w systemie interpreter języka Python w wersji przynajmniej 2.7 oraz użyć polecenia \code{python lz77\_encoder.py plik\_wejsciowy plik\_wyjsciowy}. Jeżeli ścieżka do pliku wyjściowego nie będzie zawierała rozszerzenia, skrypt automatycznie przypisze rozszerzenie \textbf{.lz77}. Ponadto do polecenia można dodać parametr \code{-v} lub \code{--verbose}, który wyświetli w konsoli poszczególne wskaźniki algorytmu LZ77 w formacie \textbf{$\langle$offset, length, next\_char$\rangle$} , gdzie:
 \begin{itemize}
-    \item \textit{offset} to pozycja najdłuższego znalezionego podciągu bufora look-ahead w buforze słownika (licząc od końca bufora słownika, czyli znaku najbliżej początku bufora look-ahead),
+    \item \textit{offset} to pozycja najdłuższego znalezionego podciągu bufora look-ahead w buforze słownika (licząc od końca bufora słownika, czyli znaku znajdującego się najbliżej początku bufora look-ahead),
     \item \textit{length} to długość znalezionego najdłuższego podciągu znaków, które należy przepisać z bufora słownika,
     \item \textit{next\_char} to kolejny znak do zakodowania po przepisaniu wcześniej zdefiniowanego podciągu znaków.
 \end{itemize}
-Koder po zakończeniu swojej pracy wyświetla także informacje dotyczące stopnia uzyskanej kompresji, procent kompresji oraz średnią bitową. Wartości te zostaną przytoczone w sekcji analizy wyników działania kodera.
-\\ Pewną niedogodnością korzystania z języka Python jest fakt, iż operuje on na bajtach, a nie bitach. Z tego powodu dane zapisywane są do plikach po 2 informacje jednocześnie, tak aby uzyskać całkowitą liczbę bitów do zapisu w zakodowanym pliku (w sekcji \ref{sec:opis_problemu} zaznaczono, że pojedyncza informacja powinna mieć długość \textbf{2.5 bajta}). 
+Koder po zakończeniu swojej pracy wyświetla także informacje dotyczące efektywności kompresji: stopień kompresji, procent kompresji oraz średnią bitową. Wartości te zostaną przytoczone w sekcji analizy wyników działania kodera.
+\\ Pewną niedogodnością korzystania z języka Python jest fakt, iż operuje on na bajtach, a nie bitach. Z tego powodu dane zapisywane są do pliku z zakodowanymi danymi po 2 wskaźniki jednocześnie, tak aby uzyskać całkowitą liczbę bitów do zapisu w zakodowanym pliku (w sekcji \ref{sec:opis_problemu} zaznaczono, że pojedyncza informacja powinna mieć długość \textbf{2.5 bajta}, co w przypadku dwóch wskaźników daje rozmiar \textbf{5 bajtów}, i taka porcja danych jest dopisywana do pliku wynikowego). 
 
 \subsection{Dekoder}
-Dekoder został zaimplementowany w pliku textit{lz77\_decoder.py}. Działa on analogicznie do kodera, zatem uruchamiany jest poleceniem \code{python lz77\_decoder.py plik\_zakodowany plik\_wyjsciowy} i tak samo jak koder posiada także opcjonalny parametr \code{--verbose} wyświetlający odczytane kroki algorytmu LZ77.
-\\Dekoder zapisuje w pamięci zawartość pliku zakodowanego, a następnie pobiera z niego każdorazowo \textbf{2.5 bajta} danych, które dekoduje do jednego kroku algorytmu LZ77 i rozkodowany ciąg znaków dopisuje do tablicy danych wyjściowych. Na końcu pracy dekodera dane wyjściowe zapisane są do pliku o wskazanej w poleceniu ścieżce, co owocuje odtworzeniem pierwotnego pliku użytego jako wejście do kodera.
+Dekoder został zaimplementowany w pliku \textit{lz77\_decoder.py}. Działa on analogicznie do kodera, zatem uruchamiany jest poleceniem \code{python lz77\_decoder.py plik\_zakodowany plik\_wyjsciowy} i tak samo jak koder posiada opcjonalny parametr \code{--verbose} wyświetlający odczytane wskaźniki do słownika.
+\\Dekoder zapisuje w pamięci zawartość pliku zakodowanego, a następnie pobiera z niej każdorazowo \textbf{2.5 bajta} danych, które dekoduje do jednego wskaźnika słownika algorytmu LZ77, a rozkodowany ciąg znaków dopisuje do tablicy danych wyjściowych. Na końcu pracy dekodera dane wyjściowe zapisywane są do pliku o wskazanej w poleceniu ścieżce, co jest równoważne z odtworzeniem pierwotnego pliku użytego jako wejście do kodera.
 
 \subsection{Zapisane przykłady działania skryptów}
 W katalogu z projektem znajdują się 3 podkatalogi zawierające zapisane przykłady użycia kodera i dekodera:
@@ -70,11 +70,11 @@ W katalogu z projektem znajdują się 3 podkatalogi zawierające zapisane przyk�
 Są to pliki opisane w kolejnym rozdziale, które posłużyły do przetestowania poprawności oraz skuteczności zaimplementowanych narzędzi.
 
 \section{Wyniki i wnioski}
-Testy działania kodera i dekodera zostały przeprowadzone głównie na plikach wykorzystywanych podczas wykładów. Jako że na zajęciach skupialiśmy się głównie na obrazach i dźwiękach, do bazy plików wejściowych dołączone zostały również pliki tekstowe: "Lorem ipsum" (5 pierwszych akapitów), tekst powieści Adama Mickiewicza pt. "Pan Tadeusz, czyli ostatni zajazd na Litwie" oraz tekst dotyczący pojęcia \textit{strony obliczeniowej} w tłumaczeniu tekstów (źródło: \url{http://tlumaczeniamickiewicz.pl/o_stronie_obliczeniowej_2.pdf}).
+Testy działania kodera i dekodera zostały przeprowadzone głównie na plikach wykorzystywanych podczas wykładów. Jako że na zajęciach skupialiśmy się głównie na obrazach i dźwiękach, do bazy plików wejściowych dołączone zostały również pliki tekstowe: "Lorem ipsum" (5 pierwszych akapitów), powieść Adama Mickiewicza pt. "Pan Tadeusz, czyli ostatni zajazd na Litwie" oraz tekst dotyczący pojęcia \textit{strony obliczeniowej} w tłumaczeniu tekstów (źródło: \url{http://tlumaczeniamickiewicz.pl/o_stronie_obliczeniowej_2.pdf}).
 
 \subsection{Kompresja plików tekstowych}
 \begin{enumerate}
-\item \textbf{Tekst powieści "Pan Tadeusz"} - wyniki kompresji:
+\item \textbf{"Pan Tadeusz"} - wyniki kompresji:
     \begin{itemize}
         \item CR (stopień kompresji) = 1.16203778
         \item CP (procent kompresji) = 13.94\%
@@ -139,7 +139,7 @@ Kompresja tekstów przynosi zatem zysk w postaci około 20\%-owego zmniejszenia 
 Analiza wyników kompresji obrazów algorytmem LZ77 wykazuje, że zakodowane pliki graficzne zazwyczaj mają większy rozmiar niż pliki wejściowe. Prawdopodobnie jest to spowodowane tym, że analizując obraz piksel po pikselu rzadko powtarza się dłuższa sekwencja takich samych wartości następujących po sobie bądź parametry kodera (długość bufora słownika i bufora wejściowego) są nieefektywne do kodowania tego typu informacji.
 \\Warto natomiast zauważyć, że w sytuacji, gdy obraz zawiera powtarzalne wartości (tak jak w pliku \textit{img1.bmp}), to algorytm bardzo efektywnie je zapisuje zmniejszając rozmiar pliku zakodowanego ponad pięciokrotnie. Niestety, w praktyce takie bitmapy pojawiają się niezwykle rzadko, choć algorytm ten może znaleźć zastosowanie w kodowaniu obrazów zawierających kody kreskowe bądź kody QR.
 \subsection{Kompresja sygnału audio (32-bit float, mono, 44100Hz)}
-Co prawda implementacja została przygotowana do pracy z plikami zawierających 8-bitowe informacje o wartościach całkowitych, jednak działa ona bezpośrednio na danych w postaci binarnej. Postanowiłem zatem sprawdzić zachowanie zaimplementowanego kodera LZ77 w pracy z plikami przeznaczonymi dla poprzedniego projektu.
+Implementacja została przygotowana do pracy z plikami zawierającymi 8-bitowe informacje o wartościach całkowitych, jednak działa ona bezpośrednio na danych w postaci binarnej. Postanowiłem zatem sprawdzić zachowanie zaimplementowanego kodera LZ77 w pracy z plikami przeznaczonymi do przetestowania algorytmu w poprzednim projekcie.
 \begin{enumerate}
 \item \textbf{icing.wav} - wyniki kompresji:
     \begin{itemize}
@@ -148,22 +148,22 @@ Co prawda implementacja została przygotowana do pracy z plikami zawierających 
         \item BR = 10.4905
 
     \end{itemize}
-\item \textbf{"music2.wav"} - wyniki kompresji:
+\item \textbf{music2.wav} - wyniki kompresji:
     \begin{itemize}
         \item CR = 0.73465301
         \item CP = -36.12\%
         \item BR = 10.8895
     \end{itemize}
-\item \textbf{"song.wav"} - wyniki kompresji:
+\item \textbf{song.wav} - wyniki kompresji:
     \begin{itemize}
         \item CR = 0.76278970
         \item CP = -31.10\%
         \item BR = 10.4878
     \end{itemize}
 \end{enumerate}
-Wyniki kompresji są tragiczne - zakodowane pliki audio są o ponad 30\% większe niż oryginały. Zdecydowanie nie jest to sposób na kompresję tego typu sygnałów w tym formacie. Trudno jednak dziwić się takim wynikom - algorytm został zaprojektowany do pracy z 8-bitowymi informacjami, a ponadto, jak wynika z poprzednich doświadczeń, głównie z tekstami.
-\\Warto jednak zaznaczyć, że z uwagi na działanie algorytmu bezpośrednio na danych binarnych zdekodowane pliki są zgodne z oryginalnymi mimo niekompatybilności dotyczącej formatu.
+Jak można było sie spodziewać, wyniki kompresji są tragiczne - zakodowane pliki audio są o ponad 30\% większe niż oryginały. Zdecydowanie nie jest to dobry sposób na kompresję tego typu sygnałów w tym formacie. Trudno jednak dziwić się takim wynikom - algorytm został zaprojektowany do pracy z 8-bitowymi informacjami, a ponadto, jak wynika z poprzednich doświadczeń, głównie z tekstami.
+\\Warto jednak zaznaczyć, że z uwagi na działanie algorytmu bezpośrednio na danych binarnych zdekodowane pliki są zgodne z oryginalnymi mimo niekompatybilności dotyczącej formatu zapisu danych.
 \section{Podsumowanie}
-Zaimplementowana wersja kodera LZ77 z buforem słownika o rozmiarze \textbf{256 bajtów} oraz \textbf{15-bajtowym} buforem wejściowym dobrze radzi sobie z kompresją plików tekstowych oraz bitmap o dużej powtarzalności następujących po sobie sekwencji jasności. Nie nadaje się ona natomiast do kompresji obrazów fotorealistycznych bądź fotografii oraz wszelakich sygnałów audio. Najprawdopodobniej można jednak dostosować algorytm kompresji LZ77 do pracy z takimi plikami poprzez manipulację wielkością obu buforów oraz zwiększeniem pojedynczej kodowanej informacji. 
+Zaimplementowana wersja kodera LZ77 z buforem słownika o rozmiarze \textbf{256 bajtów} oraz \textbf{15-bajtowym} buforem wejściowym dobrze radzi sobie z kompresją plików tekstowych oraz bitmap o dużej powtarzalności następujących po sobie sekwencji jasności. Nie nadaje się ona natomiast do kompresji obrazów fotorealistycznych bądź fotografii oraz wszelakich sygnałów audio. Najprawdopodobniej można jednak dostosować algorytm kompresji LZ77 do pracy z takimi plikami poprzez manipulację wielkością obu buforów oraz zwiększeniem rozmiaru pojedynczej kodowanej informacji. 
 
 \end{document}
