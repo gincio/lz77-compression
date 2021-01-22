@@ -1,0 +1,10 @@
+\BOOKMARK [1][-]{section.1}{Opis problemu}{}% 1
+\BOOKMARK [1][-]{section.2}{Szczeg\363\233y implementacji}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Koder}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Dekoder}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Zapisane przyk\233ady dzia\233ania skrypt\363w}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Wyniki i wnioski}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Kompresja plik\363w tekstowych}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Kompresja obraz\363w \(bitmap 8-bitowych\)}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{Kompresja sygna\233u audio \(32-bit float, mono, 44100Hz\)}{section.3}% 9
+\BOOKMARK [1][-]{section.4}{Podsumowanie}{}% 10

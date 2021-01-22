@@ -3,9 +3,11 @@
 \usepackage{polski}
 \selecthyphenation{polish}
 \usepackage{graphicx}
+\usepackage[justification=raggedright, format=plain]{caption}
 \usepackage{hyperref}
 \usepackage{enumerate}
-
+\usepackage{subfigure}
+\graphicspath{ {./images/} }
 \def\code#1{\texttt{#1}}
 
 \title{Kodowanie słownikowe danych o strukturze bajtowej}
@@ -16,6 +18,7 @@
 \maketitle
 
 \section{Opis problemu}
+\label{sec:opis_problemu}
 Zadanie polega na zrealizowaniu prostego kodera i dekodera wykorzystującego metodę LZ77
 (dla ustalenia uwagi proszę stosować metodę w wariancie przedstawionym w materiałach
 wykładowych).
@@ -23,12 +26,12 @@ Przyjmujemy następujące założenia:
 \begin{enumerate}
 \item Kodowane pliki mają strukturę bajtową (tzn. mogą zawierać dane z dowolnego
 problemu, w którym występuje co najwyżej \textbf{256} różnych „komunikatów”).
-\item Długość \textit{bufora słownika} wynosi \texybf{256} bajtów, a \textit{bufora wejściowego (look-ahead buffer)}
+\item Długość \textit{bufora słownika} wynosi \textbf{256} bajtów, a \textit{bufora wejściowego (look-ahead buffer)}
 \textbf{15} bajtów, tzn. pojedynczy \textit{wskaźnik do słownika} ma rozmiar \textbf{2.5} bajta (\textbf{1} bajt
 reprezentujący położenie kopii fragmentu znalezionej w słowniku czyli \textit{offset}, \textbf{0.5} bajta
 do zakodowania \textit{długości kopii} oraz \textbf{1} bajt zawierający „komunikat” bezpośrednio po
 znalezionym fragmencie).
-\item Rozwiązanie ma mieć postać DWÓCH gotowych do użycia funkcji/skryptów/aplikacji,
+\item Rozwiązanie ma mieć postać DWÓCH gotowych do użycia \\ funkcji/skryptów/aplikacji,
 tzn. \textit{kodera} i \textit{dekodera}.
 \item Koder ma dwa argumenty wejściowe, tzn. (1) nazwa wraz z rozszerzeniem
 kodowanego pliku oraz (2) nazwa (wraz z dowolnie zdefiniowanym rozszerzeniem, na
@@ -40,81 +43,127 @@ zadanym rozszerzeniem) pliku rozkodowanego, który ma być zapisany w tym samym
 folderze, co plik dekodowany.
 Zrealizowane rozwiązania powinny być przetestowane na wybranych przykładach (np. plikach
 w formacie \textbf{.txt}).
-
-\section{Realizacja}
-TODO: Napisać nowy tekst. Dalej już są teksty z poprzedniego projektu
-\subsection{Kwantyzacja}
-W celu zredukowania liczby kodowanych informacji dokonałem kwantyzacji skalarnej równomiernej. 
-Proces ten polegał na obliczeniu histogramu dla \code{L} przedziałów wartości (gdzie \code{L} -- liczba możliwych poziomów po kwantyzacji), wyznaczenie środków tych przedziałów i ustalenie ich jako nowych wartości sygnału skwantowanego.
-
-\subsection{Kodowanie}
-Sygnał skwantowany został zakodowany przy pomocy kodu Huffmana. Jest to metoda bardzo skuteczna, jeżeli znane są prawdopodobieństwa wystąpienia poszczególnych komunikatów. W analizowanym przykładzie takie prawdopodobieństwa są wyznaczane tuż po kwantyzacji, a kompresja przeprowadzana jest na znanych danych, więc zastosowanie tej metody powinno być efektywne.
-
-Aby tego dokonać obliczyłem prawdopodobieństwa występowania poszczególnych komunikatów ze zbioru skwantowanych wartości sygnału na podstawie sygnału wejściowego, wyliczyłem kod Huffmana, a następnie przy pomocy uzyskanego kodu przekonwertowałem tablicę wartości skwantowanych na ciąg bitów.
-
-\section{Uruchomienie projektu}
-Projekt został zrealizowany w języku programowania Python w wersji 3. 
-Niezbędna jest zatem instalacja interpretera języka python dostępnego \href{https://www.python.org/downloads/windows/}{tutaj} oraz menedżera paczek \code{pip}. W tym celu należy pobrać skrypt instalacyjny \href{https://bootstrap.pypa.io/get-pip.py}{stąd}, a następnie uruchomić instalację poleceniem \code{python3 get-pip.py} w katalogu, w którym znajduje się pobrany plik ze skryptem.
-Następnie należy zainstalować niezbędne do uruchomienia kodu biblioteki poleceniem: \\
-\code{pip install scipy numpy sounddevice matplotlib huffman json}
-
-Aby uruchomić program należy uruchomić linię komend w katalogu zawierającym plik \textit{run.py} oraz użyć komendy \code{python3 run.py}. Uruchomi to kod realizujący najmocniejszą kompresję o parametrze PSNR zbliżonym do 40dB.
-
-Można również uruchomić polecenie z dodatkowymi parametrami umożliwiającymi wybór pliku do kompresji, nazwy pliku binarnego z zakodowanym sygnałem oraz liczby skwantowanych poziomów sygnału. Aby dokonać modyfikacji tych parametrów należy wywołać polecenie w następującym formacie:\\
-\code{python3 run.py -i sygnal.wav -o wynik.bin -l poziomy\_kwantowania}.\\
-Przykład:
-\code{python3 run.py -i icing.wav -o icing.bin -l 200}. Skrypt załaduje plik \textit{icing.wav}, skwantuje sygnał do 200 poziomów, a zakodowany w formie binarnej ciąg znaków zapisze do pliku \textit{icing.bin}
-
-\section{Wyniki}
-W celu prezentacji skuteczności metod opisanych w rozdziale \ref{sec:realizacja} zaprezentuję wyniki dwóch przykładowych uruchomień kodu.
-\begin{enumerate}
-\item Wyniki dla pliku domyślnego - \textit{music2.wav}:
-    \begin{enumerate}
-    \item \textbf{Maksymalna kompresja} -- 31 poziomów kwantyzacji, PSNR najbliższy 40dB, sygnał jest rozpoznawalny, ale szumy są dość głośne:\\  
-    \code{
-        PSNR = 40.13444750137048\\
-        BR = 3.6456082260288736\\
-        Entropia = 3.605834186540232}
-    \item \textbf{Dobra jakość} -- 300 poziomów kwantyzacji, jakość zadowalająca, szum zauważalny przy większym poziomie głośności.\\
-    \code{
-        PSNR = 60.18797300522537\\
-        BR = 6.987400030899106\\
-        Entropia = 6.955444109513735}
-    \end{enumerate}
-\item Wyniki dla pliku wejściowego \textit{icing.wav}:
-    \begin{enumerate}
-    \item \textbf{Maksymalna kompresja}\\  
-    \code{
-        PSNR = 39.7806597597401\\
-        BR = 3.095083163318919\\
-        Entropia = 3.0757936495697034
-    }
-
-    \item \textbf{Dobra jakość}\\
-    \code{
-        PSNR = 60.3009764032355\\
-        BR = 6.423872204675545\\
-        Entropia = 6.395775973820144
-    }
-    \end{enumerate}
-\item Wyniki dla pliku wejściowego \textit{song.wav}:
-\begin{enumerate}
-\item \textbf{Maksymalna kompresja}\\  
-    \code{
-        PSNR = 40.04737187674411\\
-        BR = 3.7788559999999998\\
-        Entropia = 3.74769605187218
-    }
-
-    \item \textbf{Dobra jakość}\\
-    \code{
-        PSNR = 59.92132157073871\\
-        BR = 7.121758\\
-        Entropia = 7.082421065471701
-    }
-    \end{enumerate}
 \end{enumerate}
 
-Wyniki dla każdego z trzech plików są podobne. Średnia bitowa jest zbliżona do entriopii, a stosunek sygnału do szumu różni się nieznacznie w zależności od wybranego pliku. Jest to spowodowane wykorzystaniem metod niezwiązanych ściśle z określonym plikiem źródłowym, a obliczenie wartości skwantowanych oraz kodu Huffmana jest niezależne dla każdego z nich.
+\section{Szczegóły implementacji}
+\subsection{Koder}
+Funkcjonalność kodera została zaimplementowana w pliku \textit{lz77\_encoder.py}. Aby uruchomić program należy mieć zainstalowany w systemie interpreter języka Python w wersji przynajmniej 2.7 oraz użyć polecenia \code{python lz77\_encoder.py plik\_wejsciowy plik\_wyjsciowy}. Jeżeli ścieżka do pliku wyjściowego nie będzie zawierała rozszerzenia, skrypt automatycznie przypisze rozszerzenie \textbf{.lz77}. Ponadto do polecenia można dodać parametr \code{-v} lub \code{--verbose}, który wyświetli w konsoli poszczególne kroki algorytmu LZ77 w formacie \textbf{$\langle$offset, length, next\_char$\rangle$} , gdzie:
+\begin{itemize}
+    \item \textit{offset} to pozycja najdłuższego znalezionego podciągu bufora look-ahead w buforze słownika (licząc od końca bufora słownika, czyli znaku najbliżej początku bufora look-ahead),
+    \item \textit{length} to długość znalezionego najdłuższego podciągu znaków, które należy przepisać z bufora słownika,
+    \item \textit{next\_char} to kolejny znak do zakodowania po przepisaniu wcześniej zdefiniowanego podciągu znaków.
+\end{itemize}
+Koder po zakończeniu swojej pracy wyświetla także informacje dotyczące stopnia uzyskanej kompresji, procent kompresji oraz średnią bitową. Wartości te zostaną przytoczone w sekcji analizy wyników działania kodera.
+\\ Pewną niedogodnością korzystania z języka Python jest fakt, iż operuje on na bajtach, a nie bitach. Z tego powodu dane zapisywane są do plikach po 2 informacje jednocześnie, tak aby uzyskać całkowitą liczbę bitów do zapisu w zakodowanym pliku (w sekcji \ref{sec:opis_problemu} zaznaczono, że pojedyncza informacja powinna mieć długość \textbf{2.5 bajta}). 
+
+\subsection{Dekoder}
+Dekoder został zaimplementowany w pliku textit{lz77\_decoder.py}. Działa on analogicznie do kodera, zatem uruchamiany jest poleceniem \code{python lz77\_decoder.py plik\_zakodowany plik\_wyjsciowy} i tak samo jak koder posiada także opcjonalny parametr \code{--verbose} wyświetlający odczytane kroki algorytmu LZ77.
+\\Dekoder zapisuje w pamięci zawartość pliku zakodowanego, a następnie pobiera z niego każdorazowo \textbf{2.5 bajta} danych, które dekoduje do jednego kroku algorytmu LZ77 i rozkodowany ciąg znaków dopisuje do tablicy danych wyjściowych. Na końcu pracy dekodera dane wyjściowe zapisane są do pliku o wskazanej w poleceniu ścieżce, co owocuje odtworzeniem pierwotnego pliku użytego jako wejście do kodera.
+
+\subsection{Zapisane przykłady działania skryptów}
+W katalogu z projektem znajdują się 3 podkatalogi zawierające zapisane przykłady użycia kodera i dekodera:
+\begin{itemize}
+    \item \textit{input} -- zawiera pliki wejściowe dla kodera LZ77,
+    \item \textit{encoded} -- zawiera pliki z katalogu \textit{input} skompresowane przy użyciu kodera
+    \item \textit{decoded} -- zawiera pliki z katalogu \textit{encoded} zdekodowane za pomocą dekodera
+\end{itemize}
+Są to pliki opisane w kolejnym rozdziale, które posłużyły do przetestowania poprawności oraz skuteczności zaimplementowanych narzędzi.
+
+\section{Wyniki i wnioski}
+Testy działania kodera i dekodera zostały przeprowadzone głównie na plikach wykorzystywanych podczas wykładów. Jako że na zajęciach skupialiśmy się głównie na obrazach i dźwiękach, do bazy plików wejściowych dołączone zostały również pliki tekstowe: "Lorem ipsum" (5 pierwszych akapitów), tekst powieści Adama Mickiewicza pt. "Pan Tadeusz, czyli ostatni zajazd na Litwie" oraz tekst dotyczący pojęcia \textit{strony obliczeniowej} w tłumaczeniu tekstów (źródło: \url{http://tlumaczeniamickiewicz.pl/o_stronie_obliczeniowej_2.pdf}).
+
+\subsection{Kompresja plików tekstowych}
+\begin{enumerate}
+\item \textbf{Tekst powieści "Pan Tadeusz"} - wyniki kompresji:
+    \begin{itemize}
+        \item CR (stopień kompresji) = 1.16203778
+        \item CP (procent kompresji) = 13.94\%
+        \item BR (średnia bitowa) = 6.8845
+    \end{itemize}
+\item \textbf{"Lorem ipsum"} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 1.29839572
+        \item CP = 22.98\%
+        \item BR = 6.1614
+    \end{itemize}
+\item \textbf{"O stronie obliczeniowej"} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 1.28762770
+        \item CP = 22.34\%
+        \item BR = 6.2130
+    \end{itemize}
+\end{enumerate}
+
+Kompresja tekstów przynosi zatem zysk w postaci około 20\%-owego zmniejszenia rozmiaru zakodowanego pliku, co na przykład w przypadku tekstu "Pana Tadeusza" pozwoliło na oszczędność w postaci \textbf{65.68kB} powierzchni dyskowej lub transferu danych.
+
+\subsection{Kompresja obrazów (bitmap 8-bitowych)}
+\begin{enumerate}
+\item 
+    \begin{figure}
+       \minipage{0.30\textwidth}
+            \includegraphics[width=\linewidth]{sunflow}
+            \caption{SUNFLOW.bmp}
+        \endminipage\hfill
+        \minipage{0.30\textwidth}
+            \includegraphics[width=\linewidth]{boats}
+            \caption{BOATS.bmp}
+        \endminipage\hfill
+            \minipage{0.30\textwidth}
+            \includegraphics[width=\linewidth]{img1}
+            \caption{img1.bmp}\hfill
+        \endminipage
+    \end{figure}
+    \textbf{SUNFLOW.bmp} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 0.86708754
+        \item CP = -15.33\%
+        \item BR = 9.2263
+
+    \end{itemize}
+\item 
+    \textbf{BOATS.bmp} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 0.94227315
+        \item CP = -6.13\%
+        \item BR = 8.4901
+
+    \end{itemize}
+\item
+    \textbf{img1.bmp} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 5.44677024
+        \item CP = 81.64\%
+        \item BR = 1.4688
+    \end{itemize}
+\end{enumerate}
+Analiza wyników kompresji obrazów algorytmem LZ77 wykazuje, że zakodowane pliki graficzne zazwyczaj mają większy rozmiar niż pliki wejściowe. Prawdopodobnie jest to spowodowane tym, że analizując obraz piksel po pikselu rzadko powtarza się dłuższa sekwencja takich samych wartości następujących po sobie bądź parametry kodera (długość bufora słownika i bufora wejściowego) są nieefektywne do kodowania tego typu informacji.
+\\Warto natomiast zauważyć, że w sytuacji, gdy obraz zawiera powtarzalne wartości (tak jak w pliku \textit{img1.bmp}), to algorytm bardzo efektywnie je zapisuje zmniejszając rozmiar pliku zakodowanego ponad pięciokrotnie. Niestety, w praktyce takie bitmapy pojawiają się niezwykle rzadko, choć algorytm ten może znaleźć zastosowanie w kodowaniu obrazów zawierających kody kreskowe bądź kody QR.
+\subsection{Kompresja sygnału audio (32-bit float, mono, 44100Hz)}
+Co prawda implementacja została przygotowana do pracy z plikami zawierających 8-bitowe informacje o wartościach całkowitych, jednak działa ona bezpośrednio na danych w postaci binarnej. Postanowiłem zatem sprawdzić zachowanie zaimplementowanego kodera LZ77 w pracy z plikami przeznaczonymi dla poprzedniego projektu.
+\begin{enumerate}
+\item \textbf{icing.wav} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 0.76259250
+        \item CP = -31.13\%
+        \item BR = 10.4905
+
+    \end{itemize}
+\item \textbf{"music2.wav"} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 0.73465301
+        \item CP = -36.12\%
+        \item BR = 10.8895
+    \end{itemize}
+\item \textbf{"song.wav"} - wyniki kompresji:
+    \begin{itemize}
+        \item CR = 0.76278970
+        \item CP = -31.10\%
+        \item BR = 10.4878
+    \end{itemize}
+\end{enumerate}
+Wyniki kompresji są tragiczne - zakodowane pliki audio są o ponad 30\% większe niż oryginały. Zdecydowanie nie jest to sposób na kompresję tego typu sygnałów w tym formacie. Trudno jednak dziwić się takim wynikom - algorytm został zaprojektowany do pracy z 8-bitowymi informacjami, a ponadto, jak wynika z poprzednich doświadczeń, głównie z tekstami.
+\\Warto jednak zaznaczyć, że z uwagi na działanie algorytmu bezpośrednio na danych binarnych zdekodowane pliki są zgodne z oryginalnymi mimo niekompatybilności dotyczącej formatu.
+\section{Podsumowanie}
+Zaimplementowana wersja kodera LZ77 z buforem słownika o rozmiarze \textbf{256 bajtów} oraz \textbf{15-bajtowym} buforem wejściowym dobrze radzi sobie z kompresją plików tekstowych oraz bitmap o dużej powtarzalności następujących po sobie sekwencji jasności. Nie nadaje się ona natomiast do kompresji obrazów fotorealistycznych bądź fotografii oraz wszelakich sygnałów audio. Najprawdopodobniej można jednak dostosować algorytm kompresji LZ77 do pracy z takimi plikami poprzez manipulację wielkością obu buforów oraz zwiększeniem pojedynczej kodowanej informacji. 
 
 \end{document}
